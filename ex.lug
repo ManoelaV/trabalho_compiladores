@@ -1,0 +1,13 @@
+main{
+    var int teste;
+    teste := -9.98e-10;
+    if ((teste < 0)) {
+        print(-1);
+    };
+    if ((teste > 0)) {
+        print(1);
+    };
+    if ((teste == 0)){
+        print(0);
+    };
+}

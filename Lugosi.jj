@@ -1,0 +1,142 @@
+PARSER_BEGIN(LugosiParser)
+import java.io.*;
+public class LugosiParser {
+  public static void main(String args[]) throws ParseException, IOException {
+    if (args.length == 0) {
+      System.err.println("Uso: java LugosiParser arquivo.rs");
+      return;
+    }
+    LugosiParser parser = new LugosiParser(new FileInputStream(args[0]));
+    parser.Program();
+    System.out.println("Parse completo.");
+  }
+}
+
+PARSER_END(LugosiParser)
+
+SKIP : { " " | "\t" | "\n" | "\r" }
+
+TOKEN :
+{
+  <FN: "fn">
+| <LET: "let">
+| <PRINTLN: "println!">
+| <F32: "f32">
+| <I32: "i32">
+| <BOOL_TYPE: "bool">
+| <ACHAVES: "{">
+| <FCHAVES: "}">
+| <SEMI: ";">
+| <COLON: ":">
+| <ASSIGN: "=">
+| <APARENTESES: "(">
+| <FPARENTESES: ")">
+| <IF: "if">
+| <WHILE: "while">
+| <RETURN: "return">
+| <TRUE: "true">
+| <FALSE: "false">
+| <SUM: "+">
+| <SUB: "-">
+| <MULT: "*">
+| <DIV: "/">
+| <AND: "&&">
+| <OR: "||">
+| <MENOR: "<">
+| <MAIOR: ">">
+| <IGUAL: "==">
+| <VIRGULA: ",">
+}
+
+TOKEN :
+{
+  <NUM: ( ["-"] )? ( ["0"-"9"] )+ ( ["."] ( ["0"-"9"] )+ )? ( ["e","E"] ( ["-"] )? ( ["0"-"9"] )+ )?>
+| <ID: ( ["a"-"z","A"-"Z","_"] ) ( ["a"-"z","A"-"Z","0"-"9","_"] )*>
+}
+
+// Program -> fn main() { (letDecl | stmt)* }
+void Program() : {}
+{
+  <FN> <ID> <APARENTESES> <FPARENTESES> <ACHAVES>
+    ( LetDecl() | Stmt() )*
+  <FCHAVES>
+}
+
+void LetDecl() : { Token id; } {
+  <LET> id=<ID> <COLON> ( <F32> | <I32> | <BOOL_TYPE> ) <SEMI>
+}
+
+void Stmt() : {}
+{
+  ( Assignment() | Println() | IfStmt() | WhileStmt() | ReturnStmt() )
+}
+
+void Assignment() : { Token id; } {
+  id=<ID> <ASSIGN> Expr() <SEMI>
+}
+
+void Println() : { Token id; } {
+  <PRINTLN> id=<ID> <SEMI>
+}
+
+void IfStmt() : {}
+{
+  <IF> <APARENTESES> Expr() <FPARENTESES> <ACHAVES> ( LetDecl() | Stmt() )* <FCHAVES>
+}
+
+void WhileStmt() : {}
+{
+  <WHILE> <APARENTESES> Expr() <FPARENTESES> <ACHAVES> ( LetDecl() | Stmt() )* <FCHAVES>
+}
+
+void ReturnStmt() : {}
+{
+  <RETURN> Expr() <SEMI>
+}
+
+// Expressions with precedence (OR -> AND -> EQUALITY -> REL -> ADD -> MUL -> UNARY -> PRIMARY)
+void Expr() : {}
+{
+  OrExpr()
+}
+
+void OrExpr() : {}
+{
+  AndExpr() ( <OR> AndExpr() )*
+}
+
+void AndExpr() : {}
+{
+  EqExpr() ( <AND> EqExpr() )*
+}
+
+void EqExpr() : {}
+{
+  RelExpr() ( <IGUAL> RelExpr() )*
+}
+
+void RelExpr() : {}
+{
+  AddExpr() ( ( <MENOR> | <MAIOR> ) AddExpr() )*
+}
+
+void AddExpr() : {}
+{
+  MulExpr() ( ( <SUM> | <SUB> ) MulExpr() )*
+}
+
+void MulExpr() : {}
+{
+  UnaryExpr() ( ( <MULT> | <DIV> ) UnaryExpr() )*
+}
+
+void UnaryExpr() : {}
+{
+  ( <SUM> | <SUB> ) UnaryExpr() | Primary()
+}
+
+void Primary() : {}
+{
+  <NUM> | <TRUE> | <FALSE> | <ID> | <APARENTESES> Expr() <FPARENTESES>
+}
+

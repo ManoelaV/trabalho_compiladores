@@ -1,0 +1,37 @@
+main{
+    var int a;
+    var int b;
+    var int c;
+    var int media;
+    a := 10;
+    b := 15;
+    c := 8;
+    media :=                                (a + b);
+    if(((media < 7) || ((media > 10) && 
+    
+    
+    
+    (a == 10)))){
+        while 
+        
+        
+        
+        
+        
+        
+
+        
+        ((a < 10)) do 
+        
+        
+        
+        
+        
+        
+        
+        
+        {
+            a := (a + 1);
+        };
+    };
+}
