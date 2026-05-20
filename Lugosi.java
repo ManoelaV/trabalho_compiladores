@@ -16,16 +16,19 @@ public class Lugosi implements LugosiConstants {
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case FN:
+      case MAIN:
       case LET:
       case PRINTLN:
+      case READ_FLOAT:
       case F32:
-      case I32:
       case BOOL_TYPE:
+      case VOID_TYPE:
       case ACHAVES:
       case FCHAVES:
       case SEMI:
       case COLON:
       case ASSIGN:
+      case ARROW:
       case APARENTESES:
       case FPARENTESES:
       case IF:
@@ -58,6 +61,11 @@ public class Lugosi implements LugosiConstants {
 System.out.println("Palavra reservada: fn");
         break;
         }
+      case MAIN:{
+        jj_consume_token(MAIN);
+System.out.println("Palavra reservada: main");
+        break;
+        }
       case LET:{
         jj_consume_token(LET);
 System.out.println("Palavra reservada: let");
@@ -68,19 +76,24 @@ System.out.println("Palavra reservada: let");
 System.out.println("Palavra reservada: println!");
         break;
         }
+      case READ_FLOAT:{
+        jj_consume_token(READ_FLOAT);
+System.out.println("Palavra reservada: read_float");
+        break;
+        }
       case F32:{
         jj_consume_token(F32);
 System.out.println("Palavra reservada: f32");
         break;
         }
-      case I32:{
-        jj_consume_token(I32);
-System.out.println("Palavra reservada: i32");
-        break;
-        }
       case BOOL_TYPE:{
         jj_consume_token(BOOL_TYPE);
 System.out.println("Palavra reservada: bool");
+        break;
+        }
+      case VOID_TYPE:{
+        jj_consume_token(VOID_TYPE);
+System.out.println("Palavra reservada: void");
         break;
         }
       case ACHAVES:{
@@ -116,6 +129,11 @@ System.out.println("Ponto e virgula: ;");
       case ASSIGN:{
         jj_consume_token(ASSIGN);
 System.out.println("Atribui\u00e7\u00e3o: =");
+        break;
+        }
+      case ARROW:{
+        jj_consume_token(ARROW);
+System.out.println("Seta: ->");
         break;
         }
       case IF:{
@@ -233,7 +251,7 @@ System.out.println("Identificador: "+ t.image);
 	   jj_la1_0 = new int[] {0xffffffe0,0xffffffe0,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x7,0x7,};
+	   jj_la1_1 = new int[] {0x3f,0x3f,};
 	}
 
   /** Constructor with InputStream. */
@@ -379,7 +397,7 @@ System.out.println("Identificador: "+ t.image);
   /** Generate ParseException. */
   static public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[35];
+	 boolean[] la1tokens = new boolean[38];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
@@ -396,7 +414,7 @@ System.out.println("Identificador: "+ t.image);
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 35; i++) {
+	 for (int i = 0; i < 38; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;

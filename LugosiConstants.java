@@ -11,63 +11,69 @@ public interface LugosiConstants {
   /** RegularExpression Id. */
   int FN = 5;
   /** RegularExpression Id. */
-  int LET = 6;
+  int MAIN = 6;
   /** RegularExpression Id. */
-  int PRINTLN = 7;
+  int LET = 7;
   /** RegularExpression Id. */
-  int F32 = 8;
+  int PRINTLN = 8;
   /** RegularExpression Id. */
-  int I32 = 9;
+  int READ_FLOAT = 9;
   /** RegularExpression Id. */
-  int BOOL_TYPE = 10;
+  int F32 = 10;
   /** RegularExpression Id. */
-  int ACHAVES = 11;
+  int BOOL_TYPE = 11;
   /** RegularExpression Id. */
-  int FCHAVES = 12;
+  int VOID_TYPE = 12;
   /** RegularExpression Id. */
-  int SEMI = 13;
+  int ACHAVES = 13;
   /** RegularExpression Id. */
-  int COLON = 14;
+  int FCHAVES = 14;
   /** RegularExpression Id. */
-  int ASSIGN = 15;
+  int SEMI = 15;
   /** RegularExpression Id. */
-  int APARENTESES = 16;
+  int COLON = 16;
   /** RegularExpression Id. */
-  int FPARENTESES = 17;
+  int ASSIGN = 17;
   /** RegularExpression Id. */
-  int IF = 18;
+  int ARROW = 18;
   /** RegularExpression Id. */
-  int WHILE = 19;
+  int APARENTESES = 19;
   /** RegularExpression Id. */
-  int RETURN = 20;
+  int FPARENTESES = 20;
   /** RegularExpression Id. */
-  int TRUE = 21;
+  int IF = 21;
   /** RegularExpression Id. */
-  int FALSE = 22;
+  int WHILE = 22;
   /** RegularExpression Id. */
-  int SUM = 23;
+  int RETURN = 23;
   /** RegularExpression Id. */
-  int SUB = 24;
+  int TRUE = 24;
   /** RegularExpression Id. */
-  int MULT = 25;
+  int FALSE = 25;
   /** RegularExpression Id. */
-  int DIV = 26;
+  int SUM = 26;
   /** RegularExpression Id. */
-  int AND = 27;
+  int SUB = 27;
   /** RegularExpression Id. */
-  int OR = 28;
+  int MULT = 28;
   /** RegularExpression Id. */
-  int MENOR = 29;
+  int DIV = 29;
   /** RegularExpression Id. */
-  int MAIOR = 30;
+  int AND = 30;
   /** RegularExpression Id. */
-  int IGUAL = 31;
+  int OR = 31;
   /** RegularExpression Id. */
-  int VIRGULA = 32;
+  int MENOR = 32;
   /** RegularExpression Id. */
-  int NUM = 33;
+  int MAIOR = 33;
   /** RegularExpression Id. */
-  int ID = 34;
+  int IGUAL = 34;
+  /** RegularExpression Id. */
+  int VIRGULA = 35;
+  /** RegularExpression Id. */
+  int NUM = 36;
+  /** RegularExpression Id. */
+  int ID = 37;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -80,16 +86,19 @@ public interface LugosiConstants {
     "\"\\n\"",
     "\"\\r\"",
     "\"fn\"",
+    "\"main\"",
     "\"let\"",
     "\"println!\"",
+    "\"read_float\"",
     "\"f32\"",
-    "\"i32\"",
     "\"bool\"",
+    "\"void\"",
     "\"{\"",
     "\"}\"",
     "\";\"",
     "\":\"",
     "\"=\"",
+    "\"->\"",
     "\"(\"",
     "\")\"",
     "\"if\"",

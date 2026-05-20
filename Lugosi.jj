@@ -19,16 +19,19 @@ SKIP : { " " | "\t" | "\n" | "\r" }
 TOKEN :
 {
   <FN: "fn">
+| <MAIN: "main">
 | <LET: "let">
 | <PRINTLN: "println!">
+| <READ_FLOAT: "read_float">
 | <F32: "f32">
-| <I32: "i32">
 | <BOOL_TYPE: "bool">
+| <VOID_TYPE: "void">
 | <ACHAVES: "{">
 | <FCHAVES: "}">
 | <SEMI: ";">
 | <COLON: ":">
 | <ASSIGN: "=">
+| <ARROW: "->">
 | <APARENTESES: "(">
 | <FPARENTESES: ")">
 | <IF: "if">
@@ -50,43 +53,79 @@ TOKEN :
 
 TOKEN :
 {
-  <NUM: ( ["-"] )? ( ["0"-"9"] )+ ( ["."] ( ["0"-"9"] )+ )? ( ["e","E"] ( ["-"] )? ( ["0"-"9"] )+ )?>
-| <ID: ( ["a"-"z","A"-"Z","_"] ) ( ["a"-"z","A"-"Z","0"-"9","_"] )*>
+  <NUM: ( ["0"-"9"] )+ ( "." ( ["0"-"9"] )+ )? ( "E" ( "+" | "-" )? ( ["0"-"9"] )+ )?>
+| <ID: ( ["a"-"z","A"-"Z"] ) ( ["a"-"z","A"-"Z","0"-"9"] )* ( "_" ( ["a"-"z","A"-"Z","0"-"9"] )+ )*>
 }
 
-// Program -> fn main() { (letDecl | stmt)* }
 void Program() : {}
 {
-  <FN> <ID> <APARENTESES> <FPARENTESES> <ACHAVES>
-    ( LetDecl() | Stmt() )*
+  MainDecl() ( FuncDecl() )* <EOF>
+}
+
+void MainDecl() : {}
+{
+  <FN> <MAIN> <APARENTESES> <FPARENTESES> <ACHAVES>
+    ( VarDecl() | Comando() )*
   <FCHAVES>
 }
 
-void LetDecl() : { Token id; } {
-  <LET> id=<ID> <COLON> ( <F32> | <I32> | <BOOL_TYPE> ) <SEMI>
-}
-
-void Stmt() : {}
+void FuncDecl() : {}
 {
-  ( Assignment() | Println() | IfStmt() | WhileStmt() | ReturnStmt() )
+  <FN> <ID> <APARENTESES> [ ArgList() ] <FPARENTESES> <ARROW> Tipo() <ACHAVES>
+    ( VarDecl() | Comando() )*
+  <FCHAVES>
 }
 
-void Assignment() : { Token id; } {
-  id=<ID> <ASSIGN> Expr() <SEMI>
+void VarDecl() : {}
+{
+  <LET> <ID> <COLON> Tipo() <SEMI>
 }
 
-void Println() : { Token id; } {
-  <PRINTLN> id=<ID> <SEMI>
+void Tipo() : {}
+{
+    <F32>
+  | <BOOL_TYPE>
+  | <VOID_TYPE>
+}
+
+void ArgList() : {}
+{
+  Param() ( <VIRGULA> Param() )*
+}
+
+void Param() : {}
+{
+  <ID> <COLON> Tipo()
+}
+
+void Comando() : {}
+{
+    LOOKAHEAD( <ID> <ASSIGN> ) Atribuicao()
+  | LOOKAHEAD( <ID> <APARENTESES> ) ChamadaStmt()
+  | IfStmt()
+  | WhileStmt()
+  | ReturnStmt()
+  | PrintlnStmt()
+}
+
+void Atribuicao() : {}
+{
+  <ID> <ASSIGN> ( <READ_FLOAT> <APARENTESES> <FPARENTESES> | Expr() ) <SEMI>
+}
+
+void ChamadaStmt() : {}
+{
+  <ID> <APARENTESES> [ ArgExprList() ] <FPARENTESES> <SEMI>
 }
 
 void IfStmt() : {}
 {
-  <IF> <APARENTESES> Expr() <FPARENTESES> <ACHAVES> ( LetDecl() | Stmt() )* <FCHAVES>
+  <IF> Expr() <ACHAVES> ( VarDecl() | Comando() )* <FCHAVES> <SEMI>
 }
 
 void WhileStmt() : {}
 {
-  <WHILE> <APARENTESES> Expr() <FPARENTESES> <ACHAVES> ( LetDecl() | Stmt() )* <FCHAVES>
+  <WHILE> Expr() <ACHAVES> ( VarDecl() | Comando() )* <FCHAVES> <SEMI>
 }
 
 void ReturnStmt() : {}
@@ -94,7 +133,12 @@ void ReturnStmt() : {}
   <RETURN> Expr() <SEMI>
 }
 
-// Expressions with precedence (OR -> AND -> EQUALITY -> REL -> ADD -> MUL -> UNARY -> PRIMARY)
+void PrintlnStmt() : {}
+{
+  <PRINTLN> Expr() <SEMI>
+}
+
+// Expressões com precedência: OR -> AND -> igualdade -> relação -> soma -> produto -> primário.
 void Expr() : {}
 {
   OrExpr()
@@ -127,16 +171,26 @@ void AddExpr() : {}
 
 void MulExpr() : {}
 {
-  UnaryExpr() ( ( <MULT> | <DIV> ) UnaryExpr() )*
+  Primary() ( ( <MULT> | <DIV> ) Primary() )*
 }
 
-void UnaryExpr() : {}
+void ArgExprList() : {}
 {
-  ( <SUM> | <SUB> ) UnaryExpr() | Primary()
+  Expr() ( <VIRGULA> Expr() )*
 }
 
 void Primary() : {}
 {
-  <NUM> | <TRUE> | <FALSE> | <ID> | <APARENTESES> Expr() <FPARENTESES>
+    LOOKAHEAD( <ID> <APARENTESES> ) ChamadaExpr()
+  | <ID>
+  | <NUM>
+  | <TRUE>
+  | <FALSE>
+  | <APARENTESES> Expr() <FPARENTESES>
+}
+
+void ChamadaExpr() : {}
+{
+  <ID> <APARENTESES> [ ArgExprList() ] <FPARENTESES>
 }
 

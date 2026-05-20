@@ -1,11 +1,11 @@
-# Trabalho — Analisador Léxico e Sintático (MiniRust)
+# Trabalho — MiniRust 1.0 com JavaCC
 
-Este repositório contém uma implementação de um analisador léxico e um parser para a linguagem MiniRust, construídos com JavaCC.
+Este repositório contém a implementação de um analisador léxico e de um parser para a linguagem MiniRust 1.0, seguindo os enunciados fornecidos.
 
 Arquivos principais:
-- `Lugosi_analise_lexica.jj` — gramática/lexer que reconhece tokens MiniRust e imprime cada token no formato solicitado.
-- `Lugosi.jj` — parser (substituído por `LugosiParser` na geração) com regras sem recursão à esquerda e precedência de operadores.
-- `ex_mr1.rs`, `ex_mr2.rs` — dois exemplos de programas MiniRust que cobrem a maioria das construções da linguagem.
+- `Lugosi_analise_lexica.jj` — gramática léxica que reconhece os tokens previstos no enunciado e imprime cada token no formato solicitado.
+- `Lugosi.jj` — gramática sintática do parser, sem recursão à esquerda e com suporte a main, funções, listas de argumentos, chamadas, if, while, return, println! e expressões com precedência.
+- `ex_mr1.rs`, `ex_mr2.rs` — dois exemplos novos de programas MiniRust que exercitam boa parte das construções léxicas e sintáticas.
 
 Requisitos:
 - Java 11+ (javac/jre)
@@ -49,6 +49,7 @@ java LugosiParser ex_mr2.rs
 Saída e testes
 - Os arquivos `output_ex_mr1_lex.txt` e `output_ex_mr2_lex.txt` foram gerados durante testes e contêm a listagem de tokens para os exemplos.
 - O parser imprime "Parse completo." quando a entrada é aceita pela gramática.
+- A linguagem aceita segue a estrutura do enunciado: `fn main() { ... }` seguido de funções opcionais, `let`, atribuições, chamadas, `if`, `while`, `return`, `println!`, `read_float` e expressões com operadores.
 
 Próximos passos sugeridos
 - Ajustar mensagens do parser para imprimir uma árvore sintática se necessário.
