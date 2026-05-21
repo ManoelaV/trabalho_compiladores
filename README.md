@@ -15,33 +15,33 @@ Requisitos:
 
 Como gerar, compilar e executar
 
-1) Baixar o JavaCC (caso não tenha `javacc.jar` no diretório):
+1. Baixar o JavaCC (caso não tenha `javacc.jar` no diretório):
 
 ```powershell
 Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/net/java/dev/javacc/javacc/7.0.10/javacc-7.0.10.jar" -OutFile javacc.jar -UseBasicParsing
 ```
 
-1) Gerar o lexer e o parser a partir das gramáticas:
+2. Gerar o lexer e o parser a partir das gramáticas:
 
 ```powershell
 java -cp javacc.jar javacc Lugosi_analise_lexica.jj
 java -cp javacc.jar javacc Lugosi.jj
 ```
 
-1) Compilar os arquivos Java gerados:
+3. Compilar os arquivos Java gerados:
 
 ```powershell
 javac *.java
 ```
 
-1) Executar o analisador léxico (imprime tokens):
+4. Executar o analisador léxico (imprime tokens):
 
 ```powershell
 java Lugosi ex_mr1.rs
 java Lugosi ex_mr2.rs
 ```
 
-1) Executar o parser (verifica sintaxe):
+5. Executar o parser (verifica sintaxe):
 
 ```powershell
 java LugosiParser ex_mr1.rs
