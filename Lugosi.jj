@@ -1,196 +1,112 @@
-PARSER_BEGIN(LugosiParser)
+PARSER_BEGIN(Lugosi)
 import java.io.*;
-public class LugosiParser {
-  public static void main(String args[]) throws ParseException, IOException {
+public class Lugosi {
+
+  public static void main(String args[]) throws ParseException,IOException {
     if (args.length == 0) {
-      System.err.println("Uso: java LugosiParser arquivo.rs");
+      System.err.println("Uso: java Lugosi arquivo.lug");
       return;
     }
-    LugosiParser parser = new LugosiParser(new FileInputStream(args[0]));
-    parser.Program();
-    System.out.println("Parse completo.");
+    Lugosi analisadorLexico  = new Lugosi(new FileInputStream(args[0]));
+    analisadorLexico.Lugosi();
   }
+
 }
 
-PARSER_END(LugosiParser)
+PARSER_END(Lugosi)
 
-SKIP : { " " | "\t" | "\n" | "\r" }
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
 
+/* Palavras reservadas da Linguagem Lugosi */
 TOKEN :
 {
-  <FN: "fn">
-| <MAIN: "main">
-| <LET: "let">
-| <PRINTLN: "println!">
-| <READ_FLOAT: "read_float">
-| <F32: "f32">
-| <BOOL_TYPE: "bool">
-| <VOID_TYPE: "void">
-| <ACHAVES: "{">
-| <FCHAVES: "}">
-| <SEMI: ";">
-| <COLON: ":">
-| <ASSIGN: "=">
-| <ARROW: "->">
-| <APARENTESES: "(">
-| <FPARENTESES: ")">
+  <MAIN: "main">
+| <VAR: "var">
+| <INT: "int">
+| <BOOL: "bool">
 | <IF: "if">
 | <WHILE: "while">
+| <DO: "do">
 | <RETURN: "return">
+| <PRINT: "print">
+| <FUNCTION: "function">
 | <TRUE: "true">
 | <FALSE: "false">
+}
+
+/* Operadores e simbolos da Linguagem Lugosi */
+TOKEN :
+{
+  <ATRIBUICAO: ":=">
+| <IGUALDADE: "==">
+| <AND: "&&">
+| <OR: "||">
+| <ACHAVES: "{">
+| <FCHAVES: "}">
+| <APARENTESES: "(">
+| <FPARENTESES: ")">
+| <SEMI: ";">
+| <VIRGULA: ",">
 | <SUM: "+">
 | <SUB: "-">
 | <MULT: "*">
 | <DIV: "/">
-| <AND: "&&">
-| <OR: "||">
 | <MENOR: "<">
 | <MAIOR: ">">
-| <IGUAL: "==">
-| <VIRGULA: ",">
 }
 
+/* Convencoes lexicas do enunciado:
+     TOKEN_numliteral -> digitos fracao_opcional expoente_opcional
+     TOKEN_id         -> letra letraoudigito* finalsublinhado*      */
 TOKEN :
 {
-  <NUM: ( ["0"-"9"] )+ ( "." ( ["0"-"9"] )+ )? ( "E" ( "+" | "-" )? ( ["0"-"9"] )+ )?>
-| <ID: ( ["a"-"z","A"-"Z"] ) ( ["a"-"z","A"-"Z","0"-"9"] )* ( "_" ( ["a"-"z","A"-"Z","0"-"9"] )+ )*>
+  <NUM : (["0"-"9"])+ ("." (["0"-"9"])+)? (["e","E"] ("+"|"-")? (["0"-"9"])+)?>
+ |< ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"])* ( "_" (["a"-"z","A"-"Z","0"-"9"])+ )*>
 }
 
-void Program() : {}
+void Lugosi () :
+{Token t;}
 {
-  MainDecl() ( FuncDecl() )* <EOF>
-}
 
-void MainDecl() : {}
-{
-  <FN> <MAIN> <APARENTESES> <FPARENTESES> <ACHAVES>
-    ( VarDecl() | Comando() )*
-  <FCHAVES>
-}
+(
+  <MAIN> { System.out.println("Palavra reservada: main");}
+| <VAR> { System.out.println("Palavra reservada: var");}
+| <INT> { System.out.println("Palavra reservada: int");}
+| <BOOL> { System.out.println("Palavra reservada: bool");}
+| <IF> { System.out.println("Palavra reservada: if");}
+| <WHILE> { System.out.println("Palavra reservada: while");}
+| <DO> { System.out.println("Palavra reservada: do");}
+| <RETURN> { System.out.println("Palavra reservada: return");}
+| <PRINT> { System.out.println("Palavra reservada: print");}
+| <FUNCTION> { System.out.println("Palavra reservada: function");}
+| <TRUE> { System.out.println("Valor l\u00f3gico: true");}
+| <FALSE> { System.out.println("Valor l\u00f3gico: false");}
+| <ATRIBUICAO> { System.out.println("Atribui\u00e7\u00e3o: :=");}
+| <IGUALDADE> { System.out.println("Igualdade: ==");}
+| <AND> { System.out.println("E l\u00f3gico: &&");}
+| <OR> { System.out.println("Ou l\u00f3gico: ||");}
+| <ACHAVES> { System.out.println("Abre Chaves: {");}
+| <FCHAVES> { System.out.println("Fecha Chaves: }");}
+| <APARENTESES> { System.out.println("Abre par\u00eanteses: (");}
+| <FPARENTESES> { System.out.println("Fecha par\u00eanteses: )");}
+| <SEMI> { System.out.println("Ponto e v\u00edrgula: ;");}
+| <VIRGULA> { System.out.println("V\u00edrgula: ,");}
+| <SUM> { System.out.println("Soma: +");}
+| <SUB> { System.out.println("Subtra\u00e7\u00e3o: -");}
+| <MULT> { System.out.println("Multiplica\u00e7\u00e3o: *");}
+| <DIV> { System.out.println("Divis\u00e3o: /");}
+| <MENOR> { System.out.println("Menor que: <");}
+| <MAIOR> { System.out.println("Maior que: >");}
+| t=<NUM> { System.out.println("N\u00famero: "+ t.image);}
+| t=<ID> { System.out.println("Identificador: "+ t.image);}
 
-void FuncDecl() : {}
-{
-  <FN> <ID> <APARENTESES> [ ArgList() ] <FPARENTESES> <ARROW> Tipo() <ACHAVES>
-    ( VarDecl() | Comando() )*
-  <FCHAVES>
-}
+)*
+<EOF>
 
-void VarDecl() : {}
-{
-  <LET> <ID> <COLON> Tipo() <SEMI>
 }
-
-void Tipo() : {}
-{
-    <F32>
-  | <BOOL_TYPE>
-  | <VOID_TYPE>
-}
-
-void ArgList() : {}
-{
-  Param() ( <VIRGULA> Param() )*
-}
-
-void Param() : {}
-{
-  <ID> <COLON> Tipo()
-}
-
-void Comando() : {}
-{
-    LOOKAHEAD( <ID> <ASSIGN> ) Atribuicao()
-  | LOOKAHEAD( <ID> <APARENTESES> ) ChamadaStmt()
-  | IfStmt()
-  | WhileStmt()
-  | ReturnStmt()
-  | PrintlnStmt()
-}
-
-void Atribuicao() : {}
-{
-  <ID> <ASSIGN> ( <READ_FLOAT> <APARENTESES> <FPARENTESES> | Expr() ) <SEMI>
-}
-
-void ChamadaStmt() : {}
-{
-  <ID> <APARENTESES> [ ArgExprList() ] <FPARENTESES> <SEMI>
-}
-
-void IfStmt() : {}
-{
-  <IF> Expr() <ACHAVES> ( VarDecl() | Comando() )* <FCHAVES> <SEMI>
-}
-
-void WhileStmt() : {}
-{
-  <WHILE> Expr() <ACHAVES> ( VarDecl() | Comando() )* <FCHAVES> <SEMI>
-}
-
-void ReturnStmt() : {}
-{
-  <RETURN> Expr() <SEMI>
-}
-
-void PrintlnStmt() : {}
-{
-  <PRINTLN> Expr() <SEMI>
-}
-
-// Expressões com precedência: OR -> AND -> igualdade -> relação -> soma -> produto -> primário.
-void Expr() : {}
-{
-  OrExpr()
-}
-
-void OrExpr() : {}
-{
-  AndExpr() ( <OR> AndExpr() )*
-}
-
-void AndExpr() : {}
-{
-  EqExpr() ( <AND> EqExpr() )*
-}
-
-void EqExpr() : {}
-{
-  RelExpr() ( <IGUAL> RelExpr() )*
-}
-
-void RelExpr() : {}
-{
-  AddExpr() ( ( <MENOR> | <MAIOR> ) AddExpr() )*
-}
-
-void AddExpr() : {}
-{
-  MulExpr() ( ( <SUM> | <SUB> ) MulExpr() )*
-}
-
-void MulExpr() : {}
-{
-  Primary() ( ( <MULT> | <DIV> ) Primary() )*
-}
-
-void ArgExprList() : {}
-{
-  Expr() ( <VIRGULA> Expr() )*
-}
-
-void Primary() : {}
-{
-    LOOKAHEAD( <ID> <APARENTESES> ) ChamadaExpr()
-  | <ID>
-  | <NUM>
-  | <TRUE>
-  | <FALSE>
-  | <APARENTESES> Expr() <FPARENTESES>
-}
-
-void ChamadaExpr() : {}
-{
-  <ID> <APARENTESES> [ ArgExprList() ] <FPARENTESES>
-}
-

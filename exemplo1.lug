@@ -1,0 +1,23 @@
+main {
+    var int n;
+    var int resultado;
+    var bool ok;
+
+    n := 6;
+    ok := true;
+    resultado := fatorial(n);
+    if ((resultado > 100)) {
+        print(resultado);
+    };
+    ok := false;
+    print(resultado);
+}
+
+function int fatorial(int x) {
+    var int r;
+    r := 1;
+    if ((x > 1)) {
+        r := (x * fatorial((x - 1)));
+    };
+    return r;
+}

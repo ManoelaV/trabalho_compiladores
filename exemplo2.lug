@@ -1,0 +1,27 @@
+main {
+    var int a;
+    var int b;
+    var int soma;
+    var int media_final;
+
+    a := 0;
+    b := 10;
+    do {
+        a := (a + 1);
+    } while ((a < b));
+    while ((a > 0)) do {
+        a := (a - 1);
+    };
+    soma := somar(a, b);
+    media_final := ((soma / 2) + 1.5E2);
+    if (((a == 0) || ((b == 10) && true))) {
+        print(soma);
+    };
+    print(media_final);
+}
+
+function int somar(int x, int y) {
+    var int s;
+    s := (x + y);
+    return s;
+}

@@ -1,0 +1,17 @@
+﻿Palavra reservada: main
+Abre Chaves: {
+Palavra reservada: var
+Palavra reservada: int
+Identificador: total
+Ponto e vírgula: ;
+Identificador: total
+Atribuição: :=
+Número: 10
+Ponto e vírgula: ;
+Palavra reservada: print
+Abre parênteses: (
+Exception in thread "main" TokenMgrError: Lexical error at line 4, column 11.  Encountered: "@" (64), after : ""
+	at LugosiTokenManager.getNextToken(LugosiTokenManager.java:605)
+	at Lugosi.jj_ntk_f(Lugosi.java:371)
+	at Lugosi.Lugosi(Lugosi.java:18)
+	at Lugosi.main(Lugosi.java:12)

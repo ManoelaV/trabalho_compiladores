@@ -1,0 +1,101 @@
+﻿Palavra reservada: main
+Abre Chaves: {
+Palavra reservada: var
+Palavra reservada: int
+Identificador: n
+Ponto e vírgula: ;
+Palavra reservada: var
+Palavra reservada: int
+Identificador: resultado
+Ponto e vírgula: ;
+Palavra reservada: var
+Palavra reservada: bool
+Identificador: ok
+Ponto e vírgula: ;
+Identificador: n
+Atribuição: :=
+Número: 6
+Ponto e vírgula: ;
+Identificador: ok
+Atribuição: :=
+Valor lógico: true
+Ponto e vírgula: ;
+Identificador: resultado
+Atribuição: :=
+Identificador: fatorial
+Abre parênteses: (
+Identificador: n
+Fecha parênteses: )
+Ponto e vírgula: ;
+Palavra reservada: if
+Abre parênteses: (
+Abre parênteses: (
+Identificador: resultado
+Maior que: >
+Número: 100
+Fecha parênteses: )
+Fecha parênteses: )
+Abre Chaves: {
+Palavra reservada: print
+Abre parênteses: (
+Identificador: resultado
+Fecha parênteses: )
+Ponto e vírgula: ;
+Fecha Chaves: }
+Ponto e vírgula: ;
+Identificador: ok
+Atribuição: :=
+Valor lógico: false
+Ponto e vírgula: ;
+Palavra reservada: print
+Abre parênteses: (
+Identificador: resultado
+Fecha parênteses: )
+Ponto e vírgula: ;
+Fecha Chaves: }
+Palavra reservada: function
+Palavra reservada: int
+Identificador: fatorial
+Abre parênteses: (
+Palavra reservada: int
+Identificador: x
+Fecha parênteses: )
+Abre Chaves: {
+Palavra reservada: var
+Palavra reservada: int
+Identificador: r
+Ponto e vírgula: ;
+Identificador: r
+Atribuição: :=
+Número: 1
+Ponto e vírgula: ;
+Palavra reservada: if
+Abre parênteses: (
+Abre parênteses: (
+Identificador: x
+Maior que: >
+Número: 1
+Fecha parênteses: )
+Fecha parênteses: )
+Abre Chaves: {
+Identificador: r
+Atribuição: :=
+Abre parênteses: (
+Identificador: x
+Multiplicação: *
+Identificador: fatorial
+Abre parênteses: (
+Abre parênteses: (
+Identificador: x
+Subtração: -
+Número: 1
+Fecha parênteses: )
+Fecha parênteses: )
+Fecha parênteses: )
+Ponto e vírgula: ;
+Fecha Chaves: }
+Ponto e vírgula: ;
+Palavra reservada: return
+Identificador: r
+Ponto e vírgula: ;
+Fecha Chaves: }

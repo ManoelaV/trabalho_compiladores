@@ -1,0 +1,5 @@
+main {
+    var int total;
+    total := 10;
+    print(@);
+}

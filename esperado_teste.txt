@@ -1,0 +1,16 @@
+Palavra reservada: main
+Abre Chaves: {
+Palavra reservada: var
+Palavra reservada: int
+Identificador: teste
+Ponto e vírgula: ;
+Identificador: teste
+Atribuição: :=
+Número: 9
+Ponto e vírgula: ;
+Palavra reservada: print
+Abre parênteses: (
+Identificador: teste
+Fecha parênteses: )
+Ponto e vírgula: ;
+Fecha Chaves: }

@@ -1,0 +1,148 @@
+﻿Palavra reservada: main
+Abre Chaves: {
+Palavra reservada: var
+Palavra reservada: int
+Identificador: a
+Ponto e vírgula: ;
+Palavra reservada: var
+Palavra reservada: int
+Identificador: b
+Ponto e vírgula: ;
+Palavra reservada: var
+Palavra reservada: int
+Identificador: soma
+Ponto e vírgula: ;
+Palavra reservada: var
+Palavra reservada: int
+Identificador: media_final
+Ponto e vírgula: ;
+Identificador: a
+Atribuição: :=
+Número: 0
+Ponto e vírgula: ;
+Identificador: b
+Atribuição: :=
+Número: 10
+Ponto e vírgula: ;
+Palavra reservada: do
+Abre Chaves: {
+Identificador: a
+Atribuição: :=
+Abre parênteses: (
+Identificador: a
+Soma: +
+Número: 1
+Fecha parênteses: )
+Ponto e vírgula: ;
+Fecha Chaves: }
+Palavra reservada: while
+Abre parênteses: (
+Abre parênteses: (
+Identificador: a
+Menor que: <
+Identificador: b
+Fecha parênteses: )
+Fecha parênteses: )
+Ponto e vírgula: ;
+Palavra reservada: while
+Abre parênteses: (
+Abre parênteses: (
+Identificador: a
+Maior que: >
+Número: 0
+Fecha parênteses: )
+Fecha parênteses: )
+Palavra reservada: do
+Abre Chaves: {
+Identificador: a
+Atribuição: :=
+Abre parênteses: (
+Identificador: a
+Subtração: -
+Número: 1
+Fecha parênteses: )
+Ponto e vírgula: ;
+Fecha Chaves: }
+Ponto e vírgula: ;
+Identificador: soma
+Atribuição: :=
+Identificador: somar
+Abre parênteses: (
+Identificador: a
+Vírgula: ,
+Identificador: b
+Fecha parênteses: )
+Ponto e vírgula: ;
+Identificador: media_final
+Atribuição: :=
+Abre parênteses: (
+Abre parênteses: (
+Identificador: soma
+Divisão: /
+Número: 2
+Fecha parênteses: )
+Soma: +
+Número: 1.5E2
+Fecha parênteses: )
+Ponto e vírgula: ;
+Palavra reservada: if
+Abre parênteses: (
+Abre parênteses: (
+Abre parênteses: (
+Identificador: a
+Igualdade: ==
+Número: 0
+Fecha parênteses: )
+Ou lógico: ||
+Abre parênteses: (
+Abre parênteses: (
+Identificador: b
+Igualdade: ==
+Número: 10
+Fecha parênteses: )
+E lógico: &&
+Valor lógico: true
+Fecha parênteses: )
+Fecha parênteses: )
+Fecha parênteses: )
+Abre Chaves: {
+Palavra reservada: print
+Abre parênteses: (
+Identificador: soma
+Fecha parênteses: )
+Ponto e vírgula: ;
+Fecha Chaves: }
+Ponto e vírgula: ;
+Palavra reservada: print
+Abre parênteses: (
+Identificador: media_final
+Fecha parênteses: )
+Ponto e vírgula: ;
+Fecha Chaves: }
+Palavra reservada: function
+Palavra reservada: int
+Identificador: somar
+Abre parênteses: (
+Palavra reservada: int
+Identificador: x
+Vírgula: ,
+Palavra reservada: int
+Identificador: y
+Fecha parênteses: )
+Abre Chaves: {
+Palavra reservada: var
+Palavra reservada: int
+Identificador: s
+Ponto e vírgula: ;
+Identificador: s
+Atribuição: :=
+Abre parênteses: (
+Identificador: x
+Soma: +
+Identificador: y
+Fecha parênteses: )
+Ponto e vírgula: ;
+Palavra reservada: return
+Identificador: s
+Ponto e vírgula: ;
+Fecha Chaves: }

@@ -1,82 +1,97 @@
-# Trabalho — MiniRust com JavaCC
+# Trabalho 1 — Analisador Léxico da Linguagem Lugosi (JavaCC)
 
-Este repositório contém a implementação de um analisador léxico e de um parser para a linguagem MiniRust 1.0, seguindo os enunciados fornecidos.
+Este repositório contém o **Trabalho 1** da disciplina de **Projeto de Compiladores**:
+um **analisador léxico** para a **Linguagem Lugosi**, implementado com **JavaCC**.
 
-Arquivos principais:
+## Arquivos principais
 
-- `Lugosi_analise_lexica.jj` — gramática léxica que reconhece os tokens previstos no enunciado e imprime cada token no formato solicitado.
-- `Lugosi.jj` — gramática sintática do parser, sem recursão à esquerda e com suporte a main, funções, listas de argumentos, chamadas, if, while, return, println! e expressões com precedência.
-- `ex_mr1.rs`, `ex_mr2.rs` — dois exemplos novos de programas MiniRust que exercitam boa parte das construções léxicas e sintáticas.
+- `Lugosi.jj` — especificação JavaCC do analisador léxico da Linguagem Lugosi (todos os tokens previstos na gramática).
+- `teste.lug` — programa idêntico ao exemplo do enunciado.
+- `exemplo1.lug` — exemplo (funções, recursão, `bool`, `true`/`false`, `if`, `return`, `print`, operadores aritméticos e de comparação).
+- `exemplo2.lug` — exemplo (`do { } while`, `while (...) do { }`, `&&`, `||`, `==`, `/`, literal com fração/expoente `1.5E2`, identificador com sublinhado `media_final`, chamada com lista de argumentos separada por vírgula).
+- `erro.lug` - exemplo de codigo com erro. 
+- `output_teste.txt`, `output_exemplo1.txt`, `output_exemplo2.txt` — saídas geradas pelo analisador para os três programas acima.
+- `esperado_teste.txt` — saída esperada conforme o enunciado, usada para conferência (idêntica a `output_teste.txt`).
+- `javacc.jar` — ferramenta JavaCC (v7.0.10).
+- `Lugosi_professor_template.jj` — cópia do modelo mínimo enviado pelo professor, mantida apenas como referência (não entra na compilação).
 
-Requisitos:
+## Pré-requisitos
 
-- Java 11+ (javac/jre)
-- JavaCC jar (fornecido como `javacc.jar` ou disponível para download)
+- **JDK** 11+ — é preciso ter o `javac`. Testado com o **JDK 26** e com Temurin JDK 21.
 
-Como gerar, compilar e executar
+> As classes deste repositório também foram compiladas com `javac --release 8`, por isso
+> também executam em um JRE 8 (nesse caso os acentos podem aparecer "quebrados" no
+> console do Windows, por causa do encoding do terminal, e não do programa).
 
-1. Baixar o JavaCC (caso não tenha `javacc.jar` no diretório):
-
-```powershell
-Invoke-WebRequest -Uri "https://repo1.maven.org/maven2/net/java/dev/javacc/javacc/7.0.10/javacc-7.0.10.jar" -OutFile javacc.jar -UseBasicParsing
-```
-
-2. Gerar o lexer e o parser a partir das gramáticas:
-
-```powershell
-java -cp javacc.jar javacc Lugosi_analise_lexica.jj
-java -cp javacc.jar javacc Lugosi.jj
-```
-
-3. Compilar os arquivos Java gerados:
-
-```powershell
-javac *.java
-```
-
-4. Executar o analisador léxico (imprime tokens):
-
-```powershell
-java Lugosi ex_mr1.rs
-java Lugosi ex_mr2.rs
-```
-
-5. Executar o parser (verifica sintaxe):
-
-```powershell
-java LugosiParser ex_mr1.rs
-java LugosiParser ex_mr2.rs
-```
-
-No Linux/Ubuntu, os comandos equivalentes são:
+## Como gerar, compilar e executar
 
 ```bash
-sudo apt update
-sudo apt install default-jdk
-
-wget https://repo1.maven.org/maven2/net/java/dev/javacc/javacc/7.0.10/javacc-7.0.10.jar -O javacc.jar
-
-java -cp javacc.jar javacc Lugosi_analise_lexica.jj
 java -cp javacc.jar javacc Lugosi.jj
-
 javac *.java
-
-java Lugosi ex_mr1.rs
-java Lugosi ex_mr2.rs
-
-java LugosiParser ex_mr1.rs
-java LugosiParser ex_mr2.rs
+java Lugosi teste.lug
+java Lugosi exemplo1.lug
+java Lugosi exemplo2.lug
+java Lugosi erro.lug
 ```
 
-Saída e testes
+## Tokens reconhecidos
 
-- Os arquivos `output_ex_mr1_lex.txt` e `output_ex_mr2_lex.txt` foram gerados durante testes e contêm a listagem de tokens para os exemplos.
-- O parser imprime "Parse completo." quando a entrada é aceita pela gramática.
-- A linguagem aceita segue a estrutura do enunciado: `fn main() { ... }` seguido de funções opcionais, `let`, atribuições, chamadas, `if`, `while`, `return`, `println!`, `read_float` e expressões com operadores.
+Palavras reservadas:
 
-Próximos passos sugeridos
+`main`, `var`, `int`, `bool`, `if`, `while`, `do`, `return`, `print`, `function`, `true`, `false`
 
-- Ajustar mensagens do parser para imprimir uma árvore sintática se necessário.
-- Adicionar mais exemplos e casos de teste automatizados.
+Operadores e símbolos:
 
-Se quiser, eu posso commitar essas mudanças no repositório ou gerar uma árvore sintática textual pelo parser.
+`:=` (atribuição), `==` (igualdade), `&&`, `||`, `+`, `-`, `*`, `/`, `<`, `>`, `,`, `{`, `}`, `(`, `)`, `;`
+
+Literais e identificadores:
+
+- `NUM` — número literal: `digitos` `fracao_opcional` `expoente_opcional` (ex.: `9`, `10.5`, `1e-2`, `3.14E+10`).
+- `ID` — identificador: `letra letraoudigito* finalsublinhado*` (ex.: `teste`, `a_1`, `media_final_2`).
+
+## Saída esperada
+
+Para o programa `teste.lug`:
+
+```lugosi
+main {
+    var int teste;
+    teste := 9;
+    print(teste);
+}
+```
+
+a saída é:
+
+```text
+Palavra reservada: main
+Abre Chaves: {
+Palavra reservada: var
+Palavra reservada: int
+Identificador: teste
+Ponto e vírgula: ;
+Identificador: teste
+Atribuição: :=
+Número: 9
+Ponto e vírgula: ;
+Palavra reservada: print
+Abre parênteses: (
+Identificador: teste
+Fecha parênteses: )
+Ponto e vírgula: ;
+Fecha Chaves: }
+```
+
+## Convenções léxicas adotadas
+
+- O número literal **não** inclui sinal: em `-9.98e-10` o `-` é lexado como operador
+  (`Subtração: -`) e `9.98e-10` como `Número`, coerente com a gramática, na qual `-`
+  pertence a `OP`.
+- O expoente aceita `e` minúsculo e `E` maiúsculo.
+- `TOKEN_id` deve começar por letra; sublinhados só aparecem depois do primeiro
+  caractere (`letraoudigito`), como em `a_1`, `media_final_2`.
+- O texto das mensagens segue **exatamente** o formato do enunciado (`Abre Chaves`,
+  `Fecha Chaves`, `Ponto e vírgula`, `Atribuição`, `Número`). A saída obtida para
+  `teste.lug` é idêntica à saída esperada do PDF (veja `esperado_teste.txt`).
+- Os acentos estão no `Lugosi.jj` como escapes Unicode (`\u00e1`, `\u00e7`, ...), o que
+  garante a saída correta independentemente do *encoding* usado ao compilar.
