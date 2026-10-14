@@ -1,0 +1,34 @@
+main {
+    var int x;
+    var int y;
+    var bool condicao;
+    var bool outro;
+
+    x := 10;
+    y := soma_ate(4, x);
+    print(y);
+
+    condicao := ((x > 5) && (y > 5));
+    outro := ((x == 10) || (y == 0));
+    if (condicao) {
+        print(x);
+        do {
+            x := (x - 1);
+        } while (((x > 8) == true));
+    };
+
+    while (outro) do {
+        print(y);
+        outro := false;
+    };
+}
+
+function int soma_ate(int a, int b) {
+    var int total;
+    total := 0;
+    do {
+        total := (total + a);
+        a := (a - 1);
+    } while (((a > 0) == true));
+    return (total + b);
+}

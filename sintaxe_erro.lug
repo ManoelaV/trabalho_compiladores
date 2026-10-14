@@ -1,0 +1,9 @@
+main {
+    var int x;
+    var int y;
+    x := 4
+    y := x;
+    print(x);
+    print(y);
+    print(9);
+}

@@ -2,13 +2,19 @@ PARSER_BEGIN(Lugosi)
 import java.io.*;
 public class Lugosi {
 
-  public static void main(String args[]) throws ParseException,IOException {
+  public static void main(String args[]) throws IOException {
     if (args.length == 0) {
       System.err.println("Uso: java Lugosi arquivo.lug");
       return;
     }
-    Lugosi analisadorLexico  = new Lugosi(new FileInputStream(args[0]));
-    analisadorLexico.Lugosi();
+    try {
+      Lugosi analisadorSintatico = new Lugosi(new FileInputStream(args[0]));
+      analisadorSintatico.Lugosi();
+      System.out.println("An\u00e1lise sint\u00e1tica conclu\u00edda: nenhum erro encontrado.");
+    } catch (ParseException e) {
+      System.err.println("Erro sint\u00e1tico: " + e.getMessage());
+      System.exit(1);
+    }
   }
 
 }
@@ -70,43 +76,153 @@ TOKEN :
  |< ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"])* ( "_" (["a"-"z","A"-"Z","0"-"9"])+ )*>
 }
 
+/**************************************************************************************************
+ * Trabalho 2 - Analisador Sintatico da Linguagem Lugosi
+ *
+ * Gramatica do enunciado, com a recursao a esquerda eliminada (JavaCC nao aceita
+ * recursao a esquerda nem alternativas iniciadas pelo mesmo simbolo):
+ *
+ *   LUGOSI      -> MAIN FUNC*
+ *   MAIN        -> "main" "{" VARDECL SEQCOMANDOS "}"
+ *   VARDECL     -> ( "var" TIPO TOKEN_id ";" )*            [era: VARDECL "var" ... | vazio]
+ *   TIPO        -> "int" | "bool"
+ *   SEQCOMANDOS -> COMANDO*                                 [era: SEQCOMANDOS COMANDO | vazio]
+ *   COMANDO     -> TOKEN_id ":=" EXP ";"
+ *                | TOKEN_id "(" LISTAEXP? ")" ";"
+ *                | "if" "(" EXP ")" "{" SEQCOMANDOS "}" ";"
+ *                | "while" "(" EXP ")" "do" "{" SEQCOMANDOS "}" ";"
+ *                | "do" "{" SEQCOMANDOS "}" "while" "(" EXP ")" ";"
+ *                | "return" EXP ";"
+ *                | "print" "(" EXP ")" ";"
+ *   EXP         -> "(" EXP OP EXP ")" | FATOR
+ *   FATOR       -> TOKEN_id ( "(" LISTAEXP? ")" )? | TOKEN_numliteral | "true" | "false"
+ *   OP          -> "+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "=="
+ *   LISTAEXP    -> EXP ( "," EXP )*                        [era: LISTAEXP "," EXP]
+ *   FUNC        -> ( "function" TIPO TOKEN_id "(" LISTAARG? ")"
+ *                    "{" VARDECL SEQCOMANDOS "}" )*        [era: FUNC ... | ...]
+ *   LISTAARG    -> TIPO TOKEN_id ( "," TIPO TOKEN_id )*    [era: LISTAARG "," ...]
+ *
+ * As duas alternativas de COMANDO que comecam por TOKEN_id sao distinguidas pelo
+ * segundo simbolo (":=" ou "("), resolvido pelo lookahead do JavaCC.
+ **************************************************************************************************/
+
+/* LUGOSI -> MAIN FUNC* */
 void Lugosi () :
-{Token t;}
 {
+}
+{
+  Main()
+  ( Funcion() )*
+  <EOF>
+}
 
-(
-  <MAIN> { System.out.println("Palavra reservada: main");}
-| <VAR> { System.out.println("Palavra reservada: var");}
-| <INT> { System.out.println("Palavra reservada: int");}
-| <BOOL> { System.out.println("Palavra reservada: bool");}
-| <IF> { System.out.println("Palavra reservada: if");}
-| <WHILE> { System.out.println("Palavra reservada: while");}
-| <DO> { System.out.println("Palavra reservada: do");}
-| <RETURN> { System.out.println("Palavra reservada: return");}
-| <PRINT> { System.out.println("Palavra reservada: print");}
-| <FUNCTION> { System.out.println("Palavra reservada: function");}
-| <TRUE> { System.out.println("Valor l\u00f3gico: true");}
-| <FALSE> { System.out.println("Valor l\u00f3gico: false");}
-| <ATRIBUICAO> { System.out.println("Atribui\u00e7\u00e3o: :=");}
-| <IGUALDADE> { System.out.println("Igualdade: ==");}
-| <AND> { System.out.println("E l\u00f3gico: &&");}
-| <OR> { System.out.println("Ou l\u00f3gico: ||");}
-| <ACHAVES> { System.out.println("Abre Chaves: {");}
-| <FCHAVES> { System.out.println("Fecha Chaves: }");}
-| <APARENTESES> { System.out.println("Abre par\u00eanteses: (");}
-| <FPARENTESES> { System.out.println("Fecha par\u00eanteses: )");}
-| <SEMI> { System.out.println("Ponto e v\u00edrgula: ;");}
-| <VIRGULA> { System.out.println("V\u00edrgula: ,");}
-| <SUM> { System.out.println("Soma: +");}
-| <SUB> { System.out.println("Subtra\u00e7\u00e3o: -");}
-| <MULT> { System.out.println("Multiplica\u00e7\u00e3o: *");}
-| <DIV> { System.out.println("Divis\u00e3o: /");}
-| <MENOR> { System.out.println("Menor que: <");}
-| <MAIOR> { System.out.println("Maior que: >");}
-| t=<NUM> { System.out.println("N\u00famero: "+ t.image);}
-| t=<ID> { System.out.println("Identificador: "+ t.image);}
+/* MAIN -> "main" "{" VARDECL SEQCOMANDOS "}" */
+void Main () :
+{
+}
+{
+  <MAIN> <ACHAVES> VarDecl() SeqComandos() <FCHAVES>
+}
 
-)*
-<EOF>
+/* VARDECL -> ( "var" TIPO TOKEN_id ";" )* */
+void VarDecl () :
+{
+}
+{
+  ( <VAR> Tipo() <ID> <SEMI> )*
+}
 
+/* TIPO -> "int" | "bool" */
+void Tipo () :
+{
+}
+{
+  <INT>
+| <BOOL>
+}
+
+/* SEQCOMANDOS -> COMANDO* */
+void SeqComandos () :
+{
+}
+{
+  ( Comando() )*
+}
+
+/* COMANDO -> atribuicao | chamada | if | while | do-while | return | print */
+void Comando () :
+{
+}
+{
+  <ID>
+  (
+    <ATRIBUICAO> Exp() <SEMI>
+  | <APARENTESES> ( ListaExp() )? <FPARENTESES> <SEMI>
+  )
+| <IF> <APARENTESES> Exp() <FPARENTESES> <ACHAVES> SeqComandos() <FCHAVES> <SEMI>
+| <WHILE> <APARENTESES> Exp() <FPARENTESES> <DO> <ACHAVES> SeqComandos() <FCHAVES> <SEMI>
+| <DO> <ACHAVES> SeqComandos() <FCHAVES> <WHILE> <APARENTESES> Exp() <FPARENTESES> <SEMI>
+| <RETURN> Exp() <SEMI>
+| <PRINT> <APARENTESES> Exp() <FPARENTESES> <SEMI>
+}
+
+/* EXP -> "(" EXP OP EXP ")" | FATOR */
+void Exp () :
+{
+}
+{
+  <APARENTESES> Exp() Op() Exp() <FPARENTESES>
+| Fator()
+}
+
+/* FATOR -> TOKEN_id ( "(" LISTAEXP? ")" )? | TOKEN_numliteral | "true" | "false" */
+void Fator () :
+{
+}
+{
+  <ID> ( <APARENTESES> ( ListaExp() )? <FPARENTESES> )?
+| <NUM>
+| <TRUE>
+| <FALSE>
+}
+
+/* OP -> "+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "==" */
+void Op () :
+{
+}
+{
+  <SUM>
+| <SUB>
+| <MULT>
+| <DIV>
+| <AND>
+| <OR>
+| <MENOR>
+| <MAIOR>
+| <IGUALDADE>
+}
+
+/* LISTAEXP -> EXP ( "," EXP )* */
+void ListaExp () :
+{
+}
+{
+  Exp() ( <VIRGULA> Exp() )*
+}
+
+/* FUNC -> ( "function" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}" )* */
+void Funcion () :
+{
+}
+{
+  <FUNCTION> Tipo() <ID> <APARENTESES> ( ListaArg() )? <FPARENTESES>
+  <ACHAVES> VarDecl() SeqComandos() <FCHAVES>
+}
+
+/* LISTAARG -> TIPO TOKEN_id ( "," TIPO TOKEN_id )* */
+void ListaArg () :
+{
+}
+{
+  Tipo() <ID> ( <VIRGULA> Tipo() <ID> )*
 }

@@ -1,0 +1,32 @@
+main {
+    var int n;
+    var int fat;
+    var bool ordenado;
+
+    n := 5;
+    fat := fatorial(n);
+    print(fat);
+
+    ordenado := maior_que(7, 3);
+    if (ordenado) {
+        print(7);
+    };
+
+    if (((fat > 100) == false)) {
+        print(1);
+    };
+}
+
+function int fatorial(int n) {
+    var int resultado;
+    resultado := 1;
+    while ((n > 1)) do {
+        resultado := (resultado * n);
+        n := (n - 1);
+    };
+    return resultado;
+}
+
+function bool maior_que(int a, int b) {
+    return (a > b);
+}
