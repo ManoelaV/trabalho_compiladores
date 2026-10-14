@@ -14,7 +14,7 @@ Este repositório contém os trabalhos da disciplina de **Projeto de Compiladore
 - `exemplo1.lug` — exemplo (funções, recursão, `bool`, `true`/`false`, `if`, `return`, `print`, operadores aritméticos e de comparação).
 - `exemplo2.lug` — exemplo (`do { } while`, `while (...) do { }`, `&&`, `||`, `==`, `/`, literal com fração/expoente `1.5E2`, identificador com sublinhado `media_final`, chamada com lista de argumentos separada por vírgula).
 - `programa1.lug` — **trabalho 2**: programa sintaticamente válido (funções com parâmetros, `var`, atribuição, `while ... do`, `if`, chamadas de função, `print`, `return`, expressões parentetizadas).
-- `programa2.lug` — **trabalho 2**: programa sintaticamente válido (`do { } while`, blocos aninhados, `bool` com `true`/`false`, `&&`, `||`, `==`, chamada com lista de argumentos).
+- `programa2.lug` — **trabalho 2**: programa sintaticamente válido (`do { } while`, blocos aninhados, `bool` com `true`/`false`, `&&`, `||`, `==`, `<`, `/`, expressão lógica aninhada, chamada com lista de argumentos).
 - `sintaxe_erro.lug` — **trabalho 2**: programa sintaticamente **inválido** (falta o `;` após `x := 4`); o parser rejeita apontando o erro (linha 5, coluna 5, esperando `;`).
 - `erro.lug` - exemplo de codigo com erro.
 - `output_teste.txt`, `output_exemplo1.txt`, `output_exemplo2.txt` — saídas geradas pelo **analisador léxico (trabalho 1)** para os três programas acima.
@@ -107,7 +107,8 @@ Observações:
 - O `main` do programa chama `Lugosi()` dentro de um `try`; se o programa estiver
   sintaticamente correto a execução termina com uma mensagem de sucesso; caso contrário,
   o `ParseException` é reportado no terminal com **linha e coluna** do erro e o processo
-  termina com código de saída 1.
+  termina com código de saída 1. Erros **léxicos** (`TokenMgrError`, ex.: caractere
+  inválido como `@`) também são tratados e reportados com linha/coluna, sem stack trace.
 
 ### Resultados dos testes
 
@@ -116,6 +117,7 @@ Observações:
 | `teste.lug`, `exemplo1.lug`, `exemplo2.lug` | sem erros sintáticos |
 | `programa1.lug`, `programa2.lug` | sem erros sintáticos |
 | `sintaxe_erro.lug` | `Erro sintático: Encountered "y" at line 5, column 5. Was expecting ";"` |
+| `erro.lug` | `Erro léxico: Lexical error at line 4, column 11. Encountered: "@" (64)` |
 
 ## Tokens reconhecidos
 

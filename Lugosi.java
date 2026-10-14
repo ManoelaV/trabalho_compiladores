@@ -15,6 +15,9 @@ public class Lugosi implements LugosiConstants {
     } catch (ParseException e) {
       System.err.println("Erro sint\u00e1tico: " + e.getMessage());
       System.exit(1);
+    } catch (TokenMgrError e) {
+      System.err.println("Erro l\u00e9xico: " + e.getMessage());
+      System.exit(1);
     }
   }
 

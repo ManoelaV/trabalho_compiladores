@@ -6,10 +6,11 @@ main {
 
     x := 10;
     y := soma_ate(4, x);
+    print((x / 2));
     print(y);
 
     condicao := ((x > 5) && (y > 5));
-    outro := ((x == 10) || (y == 0));
+    outro := (((x == 10) || (y == 0)) && ((x < 20) == true));
     if (condicao) {
         print(x);
         do {
