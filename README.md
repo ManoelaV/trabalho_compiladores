@@ -6,10 +6,12 @@ Este repositório contém os trabalhos da disciplina de **Projeto de Compiladore
 - **Trabalho 1** — analisador léxico (tokens da linguagem).
 - **Trabalho 2** — analisador sintático (gramática completa), construído sobre o léxico
   do trabalho 1, com os mesmos tokens.
+- **Trabalho 3** — tradução dirigida por sintaxe para programas Python.
 
 ## Arquivos principais
 
-- `Lugosi.jj` — especificação JavaCC do analisador **sintático** (e léxico) da Linguagem Lugosi: todos os tokens do trabalho 1 mais as produções da gramática (`Main`, `VarDecl`, `SeqComandos`, `Comando`, `Exp`, `Fator`, `Op`, `ListaExp`, `Funcion`, `ListaArg`).
+- `Lugosi.jj` — especificação JavaCC do analisador sintático e tradutor (léxico,
+  gramática e ações semânticas) da Linguagem Lugosi.
 - `teste.lug` — programa idêntico ao exemplo do enunciado do trabalho 1.
 - `exemplo1.lug` — exemplo (funções, recursão, `bool`, `true`/`false`, `if`, `return`, `print`, operadores aritméticos e de comparação).
 - `exemplo2.lug` — exemplo (`do { } while`, `while (...) do { }`, `&&`, `||`, `==`, `/`, literal com fração/expoente `1.5E2`, identificador com sublinhado `media_final`, chamada com lista de argumentos separada por vírgula).
@@ -80,6 +82,24 @@ java Lugosi sintaxe_erro.lug
 - `programa1.lug` e `programa2.lug` devem terminar sem erros; `sintaxe_erro.lug` deve
   imprimir o erro sintático com linha e coluna e terminar com código de saída 1
   (confira com `echo $?`).
+
+## Trabalho 3 — Tradução dirigida por sintaxe para Python
+
+O parser JavaCC executa ações semânticas durante a análise e gera um programa
+Python equivalente. O arquivo de saída pode ser informado como segundo argumento;
+se omitido, ele usa o nome do arquivo `.lug` com extensão `.py`:
+
+```powershell
+java -cp javacc.jar javacc Lugosi.jj
+javac *.java
+java Lugosi exemplo1.lug exemplo1.py
+python exemplo1.py
+```
+
+A tradução inicializa variáveis (`0` ou `False`), converte `true`/`false` para
+`True`/`False`, `&&`/`||` para `and`/`or`, gera funções Python e transforma
+`do { ... } while (...)` em `while True` com `break`. Um erro léxico ou sintático
+impede a geração e termina o compilador com código de saída 1.
 
 ## Trabalho 2 — Analisador Sintático
 

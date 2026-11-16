@@ -1,16 +1,75 @@
+options {
+  STATIC = false;
+}
+
 PARSER_BEGIN(Lugosi)
 import java.io.*;
+import java.util.*;
 public class Lugosi {
+
+  private final StringBuilder mainBody = new StringBuilder();
+  private final StringBuilder functions = new StringBuilder();
+  private StringBuilder output;
+  private int indent;
+  private boolean wroteLine;
+
+  private void line(String text) {
+    for (int i = 0; i < indent; i++) {
+      output.append("    ");
+    }
+    output.append(text).append('\n');
+    wroteLine = true;
+  }
+
+  private String pythonType(String type) {
+    return "bool".equals(type) ? "bool" : "int";
+  }
+
+  private String defaultValue(String type) {
+    return "bool".equals(type) ? "False" : "0";
+  }
+
+  private void emitBlockHeader(String header) {
+    line(header + ":");
+    indent++;
+    wroteLine = false;
+  }
+
+  private void emitPassIfEmpty() {
+    if (!wroteLine) {
+      line("pass");
+    }
+  }
+
+  private String generatedProgram() {
+    StringBuilder result = new StringBuilder();
+    result.append(functions);
+    result.append("def main():\n");
+    if (mainBody.length() == 0) {
+      result.append("    pass\n");
+    } else {
+      result.append(mainBody);
+    }
+    result.append("\nif __name__ == \"__main__\":\n");
+    result.append("    main()\n");
+    return result.toString();
+  }
 
   public static void main(String args[]) throws IOException {
     if (args.length == 0) {
-      System.err.println("Uso: java Lugosi arquivo.lug");
+      System.err.println("Uso: java Lugosi arquivo.lug [saida.py]");
       return;
     }
     try {
       Lugosi analisadorSintatico = new Lugosi(new FileInputStream(args[0]));
       analisadorSintatico.Lugosi();
-      System.out.println("An\u00e1lise sint\u00e1tica conclu\u00edda: nenhum erro encontrado.");
+      String outputFile = args.length > 1
+          ? args[1]
+          : args[0].replaceFirst("\\.[^.]*$", "") + ".py";
+      Writer writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
+      writer.write(analisadorSintatico.generatedProgram());
+      writer.close();
+      System.out.println("Compilação concluída: " + outputFile);
     } catch (ParseException e) {
       System.err.println("Erro sint\u00e1tico: " + e.getMessage());
       System.exit(1);
@@ -19,7 +78,6 @@ public class Lugosi {
       System.exit(1);
     }
   }
-
 }
 
 PARSER_END(Lugosi)
@@ -124,24 +182,36 @@ void Main () :
 {
 }
 {
+  {
+    output = mainBody;
+    indent = 1;
+    wroteLine = false;
+  }
   <MAIN> <ACHAVES> VarDecl() SeqComandos() <FCHAVES>
 }
 
 /* VARDECL -> ( "var" TIPO TOKEN_id ";" )* */
 void VarDecl () :
 {
+  String type;
+  Token name;
 }
 {
-  ( <VAR> Tipo() <ID> <SEMI> )*
+  (
+    <VAR> type=Tipo() name=<ID> <SEMI>
+    {
+      line(name.image + " = " + defaultValue(type));
+    }
+  )*
 }
 
 /* TIPO -> "int" | "bool" */
-void Tipo () :
+String Tipo () :
 {
 }
 {
-  <INT>
-| <BOOL>
+  <INT> { return "int"; }
+| <BOOL> { return "bool"; }
 }
 
 /* SEQCOMANDOS -> COMANDO* */
@@ -155,77 +225,207 @@ void SeqComandos () :
 /* COMANDO -> atribuicao | chamada | if | while | do-while | return | print */
 void Comando () :
 {
+  Token name;
+  String expression;
+  String condition;
+  String arguments = null;
 }
 {
-  <ID>
+  name=<ID>
   (
-    <ATRIBUICAO> Exp() <SEMI>
-  | <APARENTESES> ( ListaExp() )? <FPARENTESES> <SEMI>
+    <ATRIBUICAO> expression=Exp() <SEMI>
+    {
+      line(name.image + " = " + expression);
+    }
+  | <APARENTESES> ( arguments=ListaExp() )? <FPARENTESES> <SEMI>
+    {
+      line(name.image + "(" + (arguments == null ? "" : arguments) + ")");
+    }
   )
-| <IF> <APARENTESES> Exp() <FPARENTESES> <ACHAVES> SeqComandos() <FCHAVES> <SEMI>
-| <WHILE> <APARENTESES> Exp() <FPARENTESES> <DO> <ACHAVES> SeqComandos() <FCHAVES> <SEMI>
-| <DO> <ACHAVES> SeqComandos() <FCHAVES> <WHILE> <APARENTESES> Exp() <FPARENTESES> <SEMI>
-| <RETURN> Exp() <SEMI>
-| <PRINT> <APARENTESES> Exp() <FPARENTESES> <SEMI>
+| <IF> <APARENTESES> condition=Exp() <FPARENTESES> <ACHAVES>
+  {
+    emitBlockHeader("if " + condition);
+  }
+  SeqComandos()
+  {
+    emitPassIfEmpty();
+    indent--;
+  }
+  <FCHAVES> <SEMI>
+| <WHILE> <APARENTESES> condition=Exp() <FPARENTESES> <DO> <ACHAVES>
+  {
+    emitBlockHeader("while " + condition);
+  }
+  SeqComandos()
+  {
+    emitPassIfEmpty();
+    indent--;
+  }
+  <FCHAVES> <SEMI>
+| <DO> <ACHAVES>
+  {
+    emitBlockHeader("while True");
+  }
+  SeqComandos()
+  {
+    emitPassIfEmpty();
+  }
+  <FCHAVES> <WHILE> <APARENTESES> condition=Exp() <FPARENTESES>
+  {
+    line("if not (" + condition + "):");
+    indent++;
+    line("break");
+    indent--;
+    indent--;
+  }
+  <SEMI>
+| <RETURN> expression=Exp() <SEMI>
+  {
+    line("return " + expression);
+  }
+| <PRINT> <APARENTESES> expression=Exp() <FPARENTESES> <SEMI>
+  {
+    line("print(" + expression + ")");
+  }
 }
 
 /* EXP -> "(" EXP OP EXP ")" | FATOR */
-void Exp () :
+String Exp () :
 {
+  String left;
+  String operator;
+  String right;
 }
 {
-  <APARENTESES> Exp() Op() Exp() <FPARENTESES>
-| Fator()
+  <APARENTESES> left=Exp() operator=Op() right=Exp() <FPARENTESES>
+  {
+    if ("&&".equals(operator)) operator = "and";
+    else if ("||".equals(operator)) operator = "or";
+    return "(" + left + " " + operator + " " + right + ")";
+  }
+| left=Fator() { return left; }
 }
 
 /* FATOR -> TOKEN_id ( "(" LISTAEXP? ")" )? | TOKEN_numliteral | "true" | "false" */
-void Fator () :
+String Fator () :
 {
+  Token name;
+  Token number;
+  String arguments = null;
 }
 {
-  <ID> ( <APARENTESES> ( ListaExp() )? <FPARENTESES> )?
-| <NUM>
-| <TRUE>
-| <FALSE>
+  name=<ID>
+  (
+    <APARENTESES> ( arguments=ListaExp() )? <FPARENTESES>
+    {
+      return name.image + "(" + (arguments == null ? "" : arguments) + ")";
+    }
+  )?
+  {
+    return name.image;
+  }
+| number=<NUM> { return number.image; }
+| <TRUE> { return "True"; }
+| <FALSE> { return "False"; }
 }
 
 /* OP -> "+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "==" */
-void Op () :
+String Op () :
 {
 }
 {
-  <SUM>
-| <SUB>
-| <MULT>
-| <DIV>
-| <AND>
-| <OR>
-| <MENOR>
-| <MAIOR>
-| <IGUALDADE>
+  <SUM> { return "+"; }
+| <SUB> { return "-"; }
+| <MULT> { return "*"; }
+| <DIV> { return "/"; }
+| <AND> { return "&&"; }
+| <OR> { return "||"; }
+| <MENOR> { return "<"; }
+| <MAIOR> { return ">"; }
+| <IGUALDADE> { return "=="; }
 }
 
 /* LISTAEXP -> EXP ( "," EXP )* */
-void ListaExp () :
+String ListaExp () :
 {
+  String first;
+  String next;
+  StringBuilder result;
 }
 {
-  Exp() ( <VIRGULA> Exp() )*
+  {
+    result = new StringBuilder();
+  }
+  first=Exp() { result.append(first); }
+  ( <VIRGULA> next=Exp() { result.append(", ").append(next); } )*
+  {
+    return result.toString();
+  }
 }
 
 /* FUNC -> ( "function" TIPO TOKEN_id "(" LISTAARG? ")" "{" VARDECL SEQCOMANDOS "}" )* */
 void Funcion () :
 {
+  String returnType;
+  Token name;
+  List<String> parameters;
+  StringBuilder previousOutput;
+  int previousIndent;
+  boolean previousWroteLine;
 }
 {
-  <FUNCTION> Tipo() <ID> <APARENTESES> ( ListaArg() )? <FPARENTESES>
+  <FUNCTION> returnType=Tipo() name=<ID> <APARENTESES>
+  {
+    parameters = new ArrayList<String>();
+  }
+  ( parameters=ListaArg() )? <FPARENTESES>
+  {
+    previousOutput = output;
+    previousIndent = indent;
+    previousWroteLine = wroteLine;
+    output = functions;
+    indent = 0;
+    wroteLine = false;
+    StringBuilder header = new StringBuilder("def ");
+    header.append(name.image).append("(");
+    for (int i = 0; i < parameters.size(); i++) {
+      if (i > 0) header.append(", ");
+      header.append(parameters.get(i));
+    }
+    header.append(")");
+    emitBlockHeader(header.toString());
+  }
   <ACHAVES> VarDecl() SeqComandos() <FCHAVES>
+  {
+    emitPassIfEmpty();
+    indent--;
+    output = previousOutput;
+    indent = previousIndent;
+    wroteLine = previousWroteLine;
+  }
 }
 
 /* LISTAARG -> TIPO TOKEN_id ( "," TIPO TOKEN_id )* */
-void ListaArg () :
+List<String> ListaArg () :
 {
+  String type;
+  Token name;
+  List<String> result;
 }
 {
-  Tipo() <ID> ( <VIRGULA> Tipo() <ID> )*
+  {
+    result = new ArrayList<String>();
+  }
+  type=Tipo() name=<ID>
+  {
+    result.add(name.image);
+  }
+  ( <VIRGULA> type=Tipo() name=<ID>
+    {
+      result.add(name.image);
+    }
+  )*
+  {
+    return result;
+  }
 }
